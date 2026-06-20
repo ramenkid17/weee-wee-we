@@ -54,12 +54,21 @@ const courseData = Object.fromEntries(
 );
 
 const locations = [
-  { id: 'bakery', icon: '🍕', name: 'Bakery', description: 'A delicious shop for food words and polite orders.', item: '🍕 Bakery Slice' },
-  { id: 'cafe', icon: '☕', name: 'Café', description: 'A cozy place to practice drinks and greetings.', item: '☕ Loyalty Card' },
-  { id: 'bicycle', icon: '🚲', name: 'Bicycle Park', description: 'A transit hub for directions and travel phrases.', item: '🚲 Map Pedal' },
-  { id: 'cats', icon: '🐈', name: 'Cats Garden', description: 'A calm garden for animal words and short sentences.', item: '🐈 Yarn Charm' },
-  { id: 'weather', icon: '🌧️', name: 'Weather Station', description: 'A sky lab for rain, sun, day, and night phrases.', item: '🌧️ Weather Patch' },
-  { id: 'moon', icon: '🌙', name: 'Moon Plaza', description: 'A night plaza for time and evening vocabulary.', item: '🌙 Moon Token' }
+  { id: 'bakery', icon: '🍕', name: 'Bakery', description: 'A delicious shop for food words and polite orders.', item: '🍕 Bakery Slice', x: -360, y: -160 },
+  { id: 'cafe', icon: '☕', name: 'Café', description: 'A cozy place to practice drinks and greetings.', item: '☕ Loyalty Card', x: -120, y: -280 },
+  { id: 'bicycle', icon: '🚲', name: 'Bicycle Park', description: 'A transit hub for directions and travel phrases.', item: '🚲 Map Pedal', x: 230, y: -210 },
+  { id: 'cats', icon: '🐈', name: 'Cats Garden', description: 'A calm garden for animal words and short sentences.', item: '🐈 Yarn Charm', x: -300, y: 170 },
+  { id: 'weather', icon: '🌧️', name: 'Weather Station', description: 'A sky lab for rain, sun, day, and night phrases.', item: '🌧️ Weather Patch', x: 310, y: 130 },
+  { id: 'moon', icon: '🌙', name: 'Moon Plaza', description: 'A night plaza for time and evening vocabulary.', item: '🌙 Moon Token', x: 40, y: 300 }
+];
+
+const npcTutors = [
+  { name: 'Chef Bella', icon: '🍕', locationId: 'bakery', prompt: 'Bakery quiz ready!' },
+  { name: 'Barista Mo', icon: '☕', locationId: 'cafe', prompt: 'Café conversation challenge!' },
+  { name: 'Rider Kai', icon: '🚲', locationId: 'bicycle', prompt: 'Direction and bicycle quiz!' },
+  { name: 'Mina Cats', icon: '🐈', locationId: 'cats', prompt: 'Animal words lesson!' },
+  { name: 'Storm Sage', icon: '🌧️', locationId: 'weather', prompt: 'Weather report quiz!' },
+  { name: 'Luna Guide', icon: '🌙', locationId: 'moon', prompt: 'Day and night vocabulary!' }
 ];
 
 let selectedLanguage = 'Spanish';
@@ -75,6 +84,8 @@ let musicTimer;
 let prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const inventory = new Set(['🗺️ Starter Map']);
 const achievements = new Set();
+const player = { x: 0, y: 0, speed: 4.2 };
+const keys = new Set();
 
 const els = {
   languageSelect: document.querySelector('#languageSelect'),
@@ -99,7 +110,13 @@ const els = {
   toggleWeather: document.querySelector('#toggleWeather'),
   toggleMusic: document.querySelector('#toggleMusic'),
   inventoryList: document.querySelector('#inventoryList'),
-  achievementList: document.querySelector('#achievementList')
+  achievementList: document.querySelector('#achievementList'),
+  npcList: document.querySelector('#npcList'),
+  schoolStatus: document.querySelector('#schoolStatus'),
+  moveUp: document.querySelector('#moveUp'),
+  moveLeft: document.querySelector('#moveLeft'),
+  moveDown: document.querySelector('#moveDown'),
+  moveRight: document.querySelector('#moveRight')
 };
 
 Object.keys(courseData).forEach((language) => {
@@ -192,6 +209,7 @@ function updateStats() {
 function renderCollections() {
   renderList(els.inventoryList, [...inventory]);
   renderList(els.achievementList, achievements.size ? [...achievements] : ['Keep quizzing to unlock trophies']);
+  renderList(els.npcList, npcTutors.map((npc) => `${npc.icon} ${npc.name}: ${npc.prompt}`));
 }
 
 function renderList(list, items) {
@@ -211,6 +229,9 @@ function updateMapButtons() {
 
 function visitLocation(locationId) {
   activeLocation = locationId;
+  const target = getLocation();
+  player.x = target.x;
+  player.y = target.y;
   const location = getLocation();
   inventory.add(location.item);
   achievements.add('🗺️ Map explorer');
@@ -290,6 +311,40 @@ els.toggleWeather.addEventListener('click', () => {
   renderCollections();
 });
 els.toggleMusic.addEventListener('click', toggleMusic);
+function setMove(direction, enabled) {
+  if (enabled) keys.add(direction);
+  else keys.delete(direction);
+}
+
+[
+  [els.moveUp, 'up'],
+  [els.moveLeft, 'left'],
+  [els.moveDown, 'down'],
+  [els.moveRight, 'right']
+].forEach(([button, direction]) => {
+  button.addEventListener('pointerdown', () => setMove(direction, true));
+  button.addEventListener('pointerup', () => setMove(direction, false));
+  button.addEventListener('pointerleave', () => setMove(direction, false));
+  button.addEventListener('click', () => {
+    setMove(direction, true);
+    window.setTimeout(() => setMove(direction, false), 120);
+  });
+});
+
+function getMoveDirection(key) {
+  return { ArrowUp: 'up', w: 'up', W: 'up', ArrowDown: 'down', s: 'down', S: 'down', ArrowLeft: 'left', a: 'left', A: 'left', ArrowRight: 'right', d: 'right', D: 'right' }[key];
+}
+
+window.addEventListener('keydown', (event) => {
+  const direction = getMoveDirection(event.key);
+  if (direction) keys.add(direction);
+});
+
+window.addEventListener('keyup', (event) => {
+  const direction = getMoveDirection(event.key);
+  if (direction) keys.delete(direction);
+});
+
 
 const canvas = document.querySelector('#world');
 const ctx = canvas.getContext('2d');
@@ -309,6 +364,72 @@ function hexToCss(color) {
 
 function updateWorldColor(color) {
   worldHue = hexToCss(color);
+}
+
+
+function updatePlayer() {
+  const dx = (keys.has('right') ? 1 : 0) - (keys.has('left') ? 1 : 0);
+  const dy = (keys.has('down') ? 1 : 0) - (keys.has('up') ? 1 : 0);
+  if (dx || dy) {
+    const length = Math.hypot(dx, dy);
+    player.x = Math.max(-520, Math.min(520, player.x + (dx / length) * player.speed));
+    player.y = Math.max(-420, Math.min(420, player.y + (dy / length) * player.speed));
+    achievements.add('🕹️ Open-world explorer');
+  }
+
+  const nearest = locations.reduce((best, location) => {
+    const distance = Math.hypot(player.x - location.x, player.y - location.y);
+    return distance < best.distance ? { location, distance } : best;
+  }, { location: getLocation(), distance: Infinity });
+
+  if (nearest.distance < 90 && nearest.location.id !== activeLocation) {
+    activeLocation = nearest.location.id;
+    const npc = npcTutors.find((tutor) => tutor.locationId === activeLocation);
+    lessonIndex = locations.findIndex((item) => item.id === activeLocation) % courseData[selectedLanguage].lessons.length;
+    inventory.add(nearest.location.item);
+    achievements.add('🧑‍🏫 Met a tutor NPC');
+    els.schoolStatus.textContent = `${npc.icon} ${npc.name} asks: ${getLesson().native} in ${selectedLanguage}?`;
+    els.npcDialogue.textContent = `${npc.name}: ${npc.prompt} Answer my question to earn rewards.`;
+    renderLesson();
+  } else if (nearest.distance < 140) {
+    const npc = npcTutors.find((tutor) => tutor.locationId === nearest.location.id);
+    els.schoolStatus.textContent = `${npc.icon} ${npc.name} is nearby. Walk closer for a question.`;
+  }
+}
+
+function worldToScreen(worldX, worldY, centerX, centerY) {
+  const depth = 1 + (worldY - player.y + 520) / 1040;
+  return {
+    x: centerX + (worldX - player.x) * 0.78,
+    y: centerY + (worldY - player.y) * 0.34,
+    scale: Math.max(0.55, Math.min(1.35, depth))
+  };
+}
+
+function drawCampusBuilding(location, centerX, centerY) {
+  const point = worldToScreen(location.x, location.y, centerX, centerY);
+  const width = 72 * point.scale;
+  const height = 82 * point.scale;
+  ctx.fillStyle = location.id === activeLocation ? 'rgba(255, 209, 102, 0.9)' : 'rgba(141, 232, 255, 0.75)';
+  ctx.fillRect(point.x - width / 2, point.y - height, width, height);
+  ctx.fillStyle = 'rgba(8, 18, 36, 0.75)';
+  ctx.fillRect(point.x - width * 0.18, point.y - height * 0.42, width * 0.36, height * 0.42);
+  ctx.font = `${28 * point.scale}px sans-serif`;
+  ctx.fillText(location.icon, point.x - 16 * point.scale, point.y - height - 10);
+  ctx.fillStyle = '#f8fbff';
+  ctx.font = `${12 * point.scale}px sans-serif`;
+  ctx.fillText(location.name, point.x - width / 2, point.y + 16);
+}
+
+function drawNpc(location, centerX, centerY) {
+  const npc = npcTutors.find((tutor) => tutor.locationId === location.id);
+  const point = worldToScreen(location.x + 44, location.y + 38, centerX, centerY);
+  ctx.beginPath();
+  ctx.fillStyle = '#ffffff';
+  ctx.arc(point.x, point.y - 28 * point.scale, 16 * point.scale, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.font = `${20 * point.scale}px sans-serif`;
+  ctx.fillText(npc.icon, point.x - 11 * point.scale, point.y - 21 * point.scale);
 }
 
 function drawTower(angle, height, centerX, centerY, radius) {
@@ -335,6 +456,7 @@ function drawTower(angle, height, centerX, centerY, radius) {
 }
 
 function drawWorld() {
+  updatePlayer();
   const width = window.innerWidth;
   const height = window.innerHeight;
   const centerX = width / 2;
@@ -366,16 +488,19 @@ function drawWorld() {
   ctx.closePath();
   ctx.fill();
   ctx.stroke();
-  locations.forEach((location, index) => {
-    const a = (index / locations.length) * Math.PI * 2;
-    ctx.font = `${isCompact ? 24 : 32}px sans-serif`;
-    ctx.fillText(location.icon, Math.cos(a) * (mapRadiusX - 55), Math.sin(a) * (mapRadiusY - 20));
-  });
   ctx.restore();
+
+  locations
+    .slice()
+    .sort((a, b) => a.y - b.y)
+    .forEach((location) => {
+      drawCampusBuilding(location, centerX, centerY + 60);
+      drawNpc(location, centerX, centerY + 60);
+    });
 
   Array.from({ length: isCompact ? 6 : 10 }).forEach((_, i, towers) => drawTower((i / towers.length) * Math.PI * 2, 1.2 + i * 0.15, centerX, centerY, isCompact ? 170 : 285));
 
-  const botY = centerY - 115 + Math.sin(Date.now() * 0.003) * 14;
+  const botY = centerY - 72 + Math.sin(Date.now() * 0.003) * 14;
   ctx.shadowColor = worldHue;
   ctx.shadowBlur = 35;
   ctx.fillStyle = worldHue;
