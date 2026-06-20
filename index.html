@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#07111f" />
+    <title>LinguaVerse Academy</title>
+    <link rel="stylesheet" href="src/styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="world" aria-label="Animated huge language-learning map"></canvas>
+      <section class="hud glass" aria-label="Player progress and language settings">
+        <div>
+          <p class="eyebrow">3D Language Learning RPG</p>
+          <h1>LinguaVerse Academy</h1>
+        </div>
+        <label>
+          Pick your language
+          <select id="languageSelect"></select>
+        </label>
+        <div class="stats" aria-live="polite">
+          <span>XP <strong id="xp">0</strong></span>
+          <span>Streak <strong id="streak">0</strong></span>
+          <span>Level <strong id="level">1</strong></span>
+          <span>Time <strong id="timeOfDay">Day</strong></span>
+          <span>Weather <strong id="weatherLabel">Clear</strong></span>
+        </div>
+      </section>
+
+      <aside class="classroom glass" aria-labelledby="lessonTitle">
+        <p class="eyebrow">Current class</p>
+        <h2 id="lessonTitle">Welcome</h2>
+        <p id="lessonBody">Choose a language and meet an AI NPC tutor to begin.</p>
+        <div class="phrase-card">
+          <span id="nativePhrase">Hello</span>
+          <strong id="targetPhrase">Hola</strong>
+        </div>
+        <div class="actions">
+          <button id="nextLesson" type="button">Next class</button>
+          <button id="pronounce" type="button">🗣️ Speak phrase</button>
+        </div>
+      </aside>
+
+      <main class="npc-panel glass" aria-labelledby="npcName">
+        <div class="npc-avatar" aria-hidden="true">🤖</div>
+        <div>
+          <p class="eyebrow">AI NPC Tutor</p>
+          <h2 id="npcName">Professor Nova</h2>
+          <p id="npcDialogue">I adapt quiz questions to your progress. Ready?</p>
+        </div>
+        <div class="quiz-box">
+          <h3 id="question">Translate “Hello”</h3>
+          <div id="answers" class="answers"></div>
+          <p id="feedback" class="feedback" aria-live="assertive"></p>
+        </div>
+      </main>
+
+      <section class="map glass" aria-label="Huge academy map">
+        <p class="eyebrow">Huge map</p>
+        <div id="mapButtons" class="map-buttons"></div>
+      </section>
+
+      <section class="controls glass" aria-label="World controls">
+        <p class="eyebrow">World</p>
+        <button id="toggleDayNight" type="button">🌙 Day/night</button>
+        <button id="toggleWeather" type="button">🌧️ Weather</button>
+        <button id="toggleMusic" type="button">🎵 Music</button>
+      </section>
+
+      <section class="school glass" aria-label="Learning school campus">
+        <p class="eyebrow">🏫 Learning school</p>
+        <h2>Open World Academy</h2>
+        <p id="schoolStatus">Use WASD, arrow keys, or the buttons to explore the 3D campus and meet tutor NPCs.</p>
+        <div class="movement-grid" aria-label="Movement controls">
+          <button id="moveUp" type="button">▲</button>
+          <button id="moveLeft" type="button">◀</button>
+          <button id="moveDown" type="button">▼</button>
+          <button id="moveRight" type="button">▶</button>
+        </div>
+      </section>
+
+      <section class="inventory glass" aria-label="Inventory and achievements">
+        <div>
+          <p class="eyebrow">🎒 Inventory</p>
+          <ul id="inventoryList"></ul>
+        </div>
+        <div>
+          <p class="eyebrow">🏆 Achievements</p>
+          <ul id="achievementList"></ul>
+        </div>
+        <div>
+          <p class="eyebrow">🧑‍🏫 NPC Tutors</p>
+          <ul id="npcList"></ul>
+        </div>
+      </section>
+    </div>
+    <script src="src/game.js"></script>
+  </body>
+</html>
