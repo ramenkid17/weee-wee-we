@@ -38,3 +38,7 @@ npm test
 ## Current branch status
 
 This branch is ready for a fresh pull request. It contains the static website, game UI, language lesson engine, responsive styles, and GitHub Pages deployment workflow.
+
+## Merge conflict troubleshooting
+
+If GitHub says the pull request has conflicts, update the branch from the target branch, resolve any files shown by GitHub, then rerun `npm test`. This repository currently has no checked-in conflict markers, and the game is made of static files so conflicts are usually resolved by keeping the latest versions of `index.html`, `src/game.js`, `src/styles.css`, `package.json`, `README.md`, `.nojekyll`, and `.github/workflows/pages.yml` from this branch.
