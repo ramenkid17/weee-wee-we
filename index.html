@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LinguaVerse Academy</title>
+    <link rel="stylesheet" href="src/styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="world"></canvas>
+      <section class="hud glass">
+        <div>
+          <p class="eyebrow">3D Language Learning RPG</p>
+          <h1>LinguaVerse Academy</h1>
+        </div>
+        <label>
+          Pick your language
+          <select id="languageSelect"></select>
+        </label>
+        <div class="stats">
+          <span>XP <strong id="xp">0</strong></span>
+          <span>Streak <strong id="streak">0</strong></span>
+          <span>Level <strong id="level">1</strong></span>
+        </div>
+      </section>
+
+      <aside class="classroom glass">
+        <p class="eyebrow">Current class</p>
+        <h2 id="lessonTitle">Welcome</h2>
+        <p id="lessonBody">Choose a language and meet an AI NPC tutor to begin.</p>
+        <div class="phrase-card">
+          <span id="nativePhrase">Hello</span>
+          <strong id="targetPhrase">Hola</strong>
+        </div>
+        <button id="nextLesson">Next class</button>
+      </aside>
+
+      <main class="npc-panel glass">
+        <div class="npc-avatar" aria-hidden="true">🤖</div>
+        <div>
+          <p class="eyebrow">AI NPC Tutor</p>
+          <h2 id="npcName">Professor Nova</h2>
+          <p id="npcDialogue">I adapt quiz questions to your progress. Ready?</p>
+        </div>
+        <div class="quiz-box">
+          <h3 id="question">Translate “Hello”</h3>
+          <div id="answers" class="answers"></div>
+          <p id="feedback" class="feedback"></p>
+        </div>
+      </main>
+
+      <section class="map glass">
+        <p class="eyebrow">Academy zones</p>
+        <button data-zone="vocab" class="active">Vocabulary Plaza</button>
+        <button data-zone="grammar">Grammar Tower</button>
+        <button data-zone="culture">Culture Garden</button>
+      </section>
+    </div>
+    <script src="src/game.js"></script>
+  </body>
+</html>
