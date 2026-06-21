@@ -159,7 +159,13 @@ function renderLesson() {
   els.npcName.textContent = course.tutor;
   els.question.textContent = `Translate “${lesson.native}” into ${selectedLanguage}`;
   els.answers.replaceChildren();
-  lesson.options.forEach((answer) => {
+  // Shuffle a copy so the correct answer is not always the first button.
+  const options = lesson.options.slice();
+  for (let i = options.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [options[i], options[j]] = [options[j], options[i]];
+  }
+  options.forEach((answer) => {
     const button = document.createElement('button');
     button.type = 'button';
     button.textContent = answer;

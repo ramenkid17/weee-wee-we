@@ -383,7 +383,7 @@ select option { background: #04200f; color: var(--phos-bright); }
   max-height: 240px;
   overflow: auto;
   padding: 16px;
-  margin-top: 96px;
+  margin-top: 220px;
 }
 .inv-col { min-width: 0; }
 .inventory ul { font-size: 0.82rem; }
